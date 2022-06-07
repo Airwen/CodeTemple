@@ -224,7 +224,7 @@ struct CTButtonInser : CTCodeInserter {
         \t[\(variable) setImage:<#(nullable UIImage *)#> forState:<#(UIControlState)#>];
         \t[\(variable) setTitleColor:<#(nullable UIColor *)#> forState:<#(UIControlState)#>];
         \t[\(variable) setTitle:<#(nullable NSString *)#> forState:<#(UIControlState)#>];
-        \t[\(variable) addTarget:<#(nullable id)#> action:<#(nonnull SEL)#> forControlEvents:<#(UIControlEvents)#>];
+        \t[\(variable) addTarget:<#(nullable id)#> action:<#(nonnull SEL)#> forControlEvents:<#UIControlEvent#>];
         
         """
         return result
@@ -283,7 +283,7 @@ struct CTImageViewInser : CTCodeInserter {
     
     func insertOCCode() -> String {
         let result = """
-        \tUIView *\(variable) = [[UIImageView alloc] init];
+        \tUIImageView *\(variable) = [[UIImageView alloc] init];
         \t\(variable).backgroundColor = <#UIColor#>;
         \t\(variable).layer.cornerRadius = <#CGFloat#>;
         \t\(variable).layer.borderColor = <#CGColor#>;
@@ -354,11 +354,16 @@ struct CTTextFieldInser : CTCodeInserter {
         \t\(variable).tintColor = <#UIColor#>;
         \t\(variable).textColor = <#UIColor#>;
         \t\(variable).font = <#UIFont#>;
+        \t\(variable).textAlignment = <#NSTextAlignment#>;
         \t\(variable).placeholder = @"<#PlaceHolder#>";
         \t\(variable).clearButtonMode = <#UITextFieldViewMode#>;
         \t\(variable).leftView = <#UIView#>;
         \t\(variable).leftViewMode = <#UITextFieldViewMode#>;
+        \t\(variable).returnKeyType = <#UIReturnKey#>;
+        \t\(variable).keyboardType = <#UIKeyboardType#>;
         \t[\(variable) addTarget:<#(nullable id)#> action:<#(nonnull SEL)#> forControlEvents:UIControlEventEditingChanged];
+        \t//点击键盘上的return view事件
+        \t[\(variable) addTarget:self action:@selector(onEdtxtSerach:) forControlEvents:UIControlEventEditingDidEndOnExit];
         """
         return result
     }
@@ -375,7 +380,11 @@ struct CTTextFieldInser : CTCodeInserter {
         \t\t\(variable).clearButtonMode = <#UITextFieldViewMode#>;
         \t\t\(variable).leftView = <#UIView#>;
         \t\t\(variable).leftViewMode = <#UITextFieldViewMode#>;
+        \t\t\(variable).returnKeyType = <#UIReturnKey#>;
+        \t\t\(variable).keyboardType = <#UIKeyboardType#>;
         \t\t\(variable).addTarget(<#T##target: Any?##Any?#>, action: <#T##Selector#>, for: .editingChanged)
+        \t\t//点击键盘上的return view事件
+        \t\t\(variable).addTarget(<#T##target: Any?##Any?#>, action: <#T##Selector#>, for: .editingDidEndOnExit)
         """
         return result
     }
@@ -563,11 +572,11 @@ struct CTTableViewInser : CTCodeInserter {
 
         #pragma mark - <UITableViewDataSource>
         - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-        \treturn <#code#>
+        \treturn <#code#>;
         }
         
         - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-        \treturn <#code#>
+        \treturn <#code#>;
         }
         """
         return [result]
@@ -630,7 +639,7 @@ struct CTCollectionInser : CTCodeInserter {
         variable = variableName
     }
     /*
-
+     UICollectionElementKindSectionHeader
      */
     func insertOCCode() -> String {
         let result = """
@@ -643,6 +652,7 @@ struct CTCollectionInser : CTCodeInserter {
         \tUICollectionView *\(variable) = [[UICollectionView alloc] initWithFrame:CGRectMake(<#x#>, <#y#>, <#width#>, <#height#>) collectionViewLayout:cvLayout];
         \t\(variable).backgroundColor = <#UIColor#>;
         \t[\(variable) registerClass:<#(nullable Class)#> forCellWithReuseIdentifier:<#(nonnull NSString *)#>];
+        \t[\(variable) registerClass:<#(nullable Class)#> forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:<#(nonnull NSString *)#>];
         \t\(variable).delegate = self;
         \t\(variable).dataSource = self;
         \t\(variable).pagingEnabled = YES;
@@ -661,11 +671,11 @@ struct CTCollectionInser : CTCodeInserter {
 
         #pragma mark - <UICollectionViewDataSource>
         - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-        \treturn <#code#>
+        \treturn <#code#>;
         }
         
         - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-        \treturn <#code#>
+        \treturn <#code#>;
         }
         """
         return [result]

@@ -24,12 +24,16 @@ class SourceEditorCommand: NSObject, XCSourceEditorCommand {
                 if selText.contains(" ") {
                     if let variabel = selText.components(separatedBy: " ").last {
                         if variabel.contains("\n") {
+                            //截取变量名
                             let v = variabel.replacingOccurrences(of: "\n", with: "")
                             lines.replaceObject(at: lineNum, with: "")
+                            //插入UI控件代码
                             lines.insert(codeContext.insert(code: v, fileType: languageType), at: lineNum)
                             
+                            //获取UI控件代码Delegate代码插入的位置信息
                             let appendCodeInfo = codeContext.appendCodeLines(codeLines: lines.copy() as! NSArray, selectedLineNum: lineNum, fileType: languageType)
                             
+                            //根据Delegate代码插入的位置信息，来插入Delegate代码
                             if appendCodeInfo.0.count > 0,
                                let appendlocationInfo = appendCodeInfo.1, let startIndex = appendlocationInfo.startIndex {
                                 switch appendlocationInfo.codeAppendType {
